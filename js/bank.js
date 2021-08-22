@@ -1,57 +1,56 @@
-function getInputValue(inputId) {
-    const input = document.getElementById(inputId);
-    const inputText = input.value;
-    const newAmount = parseFloat(inputText);
+// get the fieldValues then return to their function
+function fieldTextValue(fieldId) {
+    const field = document.getElementById(fieldId);
+    const fieldText = field.innerText;
+    const fieldValue = parseFloat(fieldText);
+    return fieldValue;
+}
+// give input
+function getInputValue(inputField) {
+    const input = document.getElementById(inputField);
+    const inputValue = parseFloat(input.value);
     input.value = '';
-    return newAmount;
+    return inputValue;
 }
-function updateTotalField(amountId, newAmount) {
-    const amount = document.getElementById(amountId);
-    const amountText = amount.innerText;
-    const previousAmount = parseFloat(amountText);
-    amount.innerText = previousAmount + newAmount;
+// print deposit-withdraw amount
+function getTotal(amountField, inputValue) {
+    const amountValue = fieldTextValue(amountField);
+    const newTotal = amountValue + inputValue;
+    document.getElementById(amountField).innerText = newTotal;
 }
-function getCurrentBalance() {
-    const balance = document.getElementById('balance');
-    const balanceText = balance.innerText;
-    const previousBalance = parseFloat(balanceText);
-    return previousBalance;
-}
-function updateBalance(balanceId, newAmount, isAdd) {
-    const balance = document.getElementById(balanceId);
-    const previousBalance = getCurrentBalance();
+// calculate & print balance
+function updateBalance(inputValue, isAdd) {
+    const balanceValue = fieldTextValue('balance');
+    let newBalance = 0;
     if (isAdd == true) {
-        balance.innerText = previousBalance + newAmount;
+        newBalance = balanceValue + inputValue;
     }
     else {
-        balance.innerText = previousBalance - newAmount;
+        newBalance = balanceValue - inputValue;
     }
+    document.getElementById('balance').innerText = newBalance;
 }
-
 document.getElementById('deposit-submit').addEventListener('click', function () {
-    const newDepositAmount = getInputValue('deposit-input');
-    if (newDepositAmount > 0) {
-        updateTotalField('deposit-amount', newDepositAmount);
-        updateBalance('balance', newDepositAmount, true);
+    const inputValue = getInputValue('deposit-input');
+    if (inputValue > 0) {
+        getTotal('deposit-amount', inputValue);
+        updateBalance(inputValue, true);
     }
     else {
-        alert('Invalid Input! Please Enter valid amount to deposit');
+        alert('Invalid input! Please Enter a valid deposit amount');
     }
-});
+})
 document.getElementById('withdraw-submit').addEventListener('click', function () {
-    const newWithdrawAmount = getInputValue('withdraw-input');
-    const currentBalance = getCurrentBalance();
-
-    if (newWithdrawAmount > 0 && newWithdrawAmount <= currentBalance) {
-        updateTotalField('withdraw-amount', newWithdrawAmount);
-        updateBalance('balance', newWithdrawAmount, false);
+    const inputValue = getInputValue('withdraw-input');
+    const balance = fieldTextValue('balance');
+    if (inputValue > 0 && inputValue <= balance) {
+        getTotal('withdraw-amount', inputValue);
+        updateBalance(inputValue, false);
+    }
+    else if (inputValue > balance) {
+        alert('Insufficent balance! You cannot withdraw');
     }
     else {
-        if (newWithdrawAmount > currentBalance) {
-            alert('Insufficient balance! Sorry you cannot withdraw');
-        }
-        else {
-            alert('Invalid Input! Please Enter valid amount to withdraw');
-        }
+        alert('Invalid input! Please Enter a valid withdrawal amount');
     }
-});
+})
